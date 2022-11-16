@@ -1,4 +1,19 @@
-import { ethers } from "hardhat";
+import { ethers, network, run } from "hardhat";
+import { Contract } from "ethers";
+
+async function verify(contract: Contract, name: string, parameters: any[]) {
+  if (network.name !== "hardhat" && network.name !== "localhost") {
+    console.log("Waiting to verify...");
+    await contract.deployTransaction.wait(6);
+
+    console.log(`Verifying ${name}...`);
+    await run("verify:verify", {
+      address: contract.address,
+      contract: `contracts/${name}.sol:${name}`,
+      constructorArguments: parameters,
+    });
+  }
+}
 
 async function main() {
   // HIGHLANDER
@@ -11,6 +26,8 @@ async function main() {
   console.log(
     `Highlander with ${TIME_INTERVAL}s interval deployed to ${highlander.address}`
   );
+
+  await verify(highlander, "Highlander", [TIME_INTERVAL]);
 
   // TARGET
 
@@ -25,12 +42,16 @@ async function main() {
       `blocks window deployed to ${target.address}`
   );
 
+  await verify(target, "Target", [BLOCKS_INTERVAL, WINDOW]);
+
   // RAPIDFIRE
 
   const RapidFire = await ethers.getContractFactory("RapidFire");
   const rapidFire = await RapidFire.deploy();
   await rapidFire.deployed();
   console.log(`RapidFire deployed to ${rapidFire.address}`);
+
+  await verify(rapidFire, "Rapidfire", [BLOCKS_INTERVAL, WINDOW]);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
