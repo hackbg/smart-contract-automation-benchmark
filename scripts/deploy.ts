@@ -51,7 +51,7 @@ async function main() {
   await rapidFire.deployed();
   console.log(`RapidFire deployed to ${rapidFire.address}`);
 
-  await verify(rapidFire, "Rapidfire", [BLOCKS_INTERVAL, WINDOW]);
+  await verify(rapidFire, "RapidFire", []);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
