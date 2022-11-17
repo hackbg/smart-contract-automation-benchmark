@@ -13,11 +13,12 @@ contract Highlander is IConditionalCommand, AutomationCompatible {
     }
 
     function exec(bytes32 network) public {
-        emit Executed(network);
+        bool success = shouldExec();
+        emit Executed(success, network);
 
-        if (!shouldExec()) revert InvalidExecution();
-
-        s_lastTimestamp = block.timestamp;
+        if(success){
+            s_lastTimestamp = block.timestamp;
+        }
     }
 
     function shouldExec() public view returns (bool) {

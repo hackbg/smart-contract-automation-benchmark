@@ -49,25 +49,26 @@ describe("Target", function () {
 
   describe("Command", function () {
     describe("Execution", function () {
-      it("should fail if outside of target window", async function () {
+      it("should emit event with false as success parameter", async function () {
         const { target, interval, window } = await loadFixture(
           deployTargetFixture
         );
 
         await mineUpTo(interval - window);
 
-        await expect(target.exec(testNetwork)).to.be.revertedWithCustomError(
-          target,
-          "InvalidExecution"
-        );
+        await expect(target.exec(testNetwork))
+          .to.emit(target, "Executed")
+          .withArgs(false, testNetwork);
       });
 
-      it("should not fail when throughout target window", async function () {
+      it("should emit event with false as success parameter", async function () {
         const { target, interval } = await loadFixture(deployTargetFixture);
 
         await mineUpTo(interval);
 
-        await expect(target.exec(testNetwork)).to.not.be.reverted;
+        await expect(target.exec(testNetwork))
+          .to.emit(target, "Executed")
+          .withArgs(true, testNetwork);
       });
     });
 
@@ -79,7 +80,7 @@ describe("Target", function () {
 
         await expect(target.exec(testNetwork))
           .to.emit(target, "Executed")
-          .withArgs(testNetwork);
+          .withArgs(true, testNetwork);
       });
 
       it("should emit when execution fails", async function () {
@@ -91,7 +92,7 @@ describe("Target", function () {
         } catch (exception) {
           expect(failedExecTx)
             .to.emit(target, "Executed")
-            .withArgs(testNetwork);
+            .withArgs(false, testNetwork);
         }
       });
     });
@@ -103,7 +104,7 @@ describe("Target", function () {
 
       await expect(target.performUpkeep(HashZero))
         .to.emit(target, "Executed")
-        .withArgs(formatBytes32String("CHAINLINK"));
+        .withArgs(true, formatBytes32String("CHAINLINK"));
     });
   });
 
