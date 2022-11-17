@@ -36,6 +36,6 @@ contract RapidFire is IConditionalCommand, AutomationCompatible {
         returns (bool canExec, bytes memory execPayload)
     {
         canExec = shouldExec();
-        execPayload = abi.encodeWithSelector(this.exec.selector, "GELATO");
+        execPayload = abi.encodeCall(IConditionalCommand.exec, "GELATO");
     }
 }
