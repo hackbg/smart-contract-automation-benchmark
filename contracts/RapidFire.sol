@@ -6,7 +6,7 @@ import "./interfaces/IConditionalCommand.sol";
 
 contract RapidFire is IConditionalCommand, AutomationCompatible {
     function exec(bytes32 network) public {
-        emit Executed(network);
+        emit Executed(true, network);
     }
 
     function shouldExec() public pure returns (bool) {

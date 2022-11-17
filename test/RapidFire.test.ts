@@ -26,12 +26,16 @@ describe("RapidFire", function () {
   });
 
   describe("Command", function () {
-    it("should not fail if called repeatedly", async function () {
+    it("should always execute", async function () {
       const { rapidFire } = await loadFixture(deployRapidFireFixture);
 
-      await rapidFire.exec(testNetwork);
+      await expect(rapidFire.exec(testNetwork))
+        .to.emit(rapidFire, "Executed")
+        .withArgs(true, testNetwork);
 
-      expect(rapidFire.exec(testNetwork)).to.not.be.reverted;
+      await expect(rapidFire.exec(testNetwork))
+        .to.emit(rapidFire, "Executed")
+        .withArgs(true, testNetwork);
     });
 
     it("should emit event on execution", async function () {
@@ -39,7 +43,7 @@ describe("RapidFire", function () {
 
       await expect(rapidFire.exec(testNetwork))
         .to.emit(rapidFire, "Executed")
-        .withArgs(testNetwork);
+        .withArgs(true, testNetwork);
     });
   });
 
@@ -49,7 +53,7 @@ describe("RapidFire", function () {
 
       await expect(rapidFire.performUpkeep(HashZero))
         .to.emit(rapidFire, "Executed")
-        .withArgs(formatBytes32String("CHAINLINK"));
+        .withArgs(true, formatBytes32String("CHAINLINK"));
     });
   });
 

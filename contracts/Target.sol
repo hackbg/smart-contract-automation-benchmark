@@ -14,9 +14,8 @@ contract Target is IConditionalCommand, AutomationCompatible {
     }
 
     function exec(bytes32 network) public {
-        emit Executed(network);
-
-        if (!shouldExec()) revert InvalidExecution();
+        bool success = shouldExec();
+        emit Executed(success, network);
     }
 
     function shouldExec() public view returns (bool) {

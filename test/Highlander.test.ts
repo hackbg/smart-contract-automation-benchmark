@@ -45,17 +45,17 @@ describe("Highlander", function () {
 
   describe("Command", function () {
     describe("Execution", function () {
-      it("should fail if interval's not passed", async function () {
+      it("should have false as event argument if interval's not passed", async function () {
         const { highlander } = await loadFixture(deployHighlanderFixture);
 
         await highlander.exec(testNetwork);
 
-        await expect(
-          highlander.exec(testNetwork)
-        ).to.be.revertedWithCustomError(highlander, "InvalidExecution");
+        await expect(highlander.exec(testNetwork))
+          .to.emit(highlander, "Executed")
+          .withArgs(false, testNetwork);
       });
 
-      it("should not fail if interval's passed", async function () {
+      it("should execute if interval's passed", async function () {
         const { highlander, interval } = await loadFixture(
           deployHighlanderFixture
         );
@@ -64,7 +64,9 @@ describe("Highlander", function () {
 
         await time.increase(interval + 1);
 
-        await expect(highlander.exec(testNetwork)).to.not.be.reverted;
+        await expect(highlander.exec(testNetwork))
+          .to.emit(highlander, "Executed")
+          .withArgs(true, testNetwork);
       });
     });
 
@@ -80,22 +82,7 @@ describe("Highlander", function () {
 
         await expect(highlander.exec(testNetwork))
           .to.emit(highlander, "Executed")
-          .withArgs(testNetwork);
-      });
-
-      it("should emit when execution fails", async function () {
-        const { highlander } = await loadFixture(deployHighlanderFixture);
-
-        await highlander.exec(testNetwork);
-
-        let failedExecTx;
-        try {
-          failedExecTx = await highlander.exec(testNetwork);
-        } catch (error) {
-          expect(failedExecTx)
-            .to.emit(highlander, "Executed")
-            .withArgs(testNetwork);
-        }
+          .withArgs(true, testNetwork);
       });
     });
   });
@@ -106,7 +93,7 @@ describe("Highlander", function () {
 
       await expect(highlander.performUpkeep(HashZero))
         .to.emit(highlander, "Executed")
-        .withArgs(formatBytes32String("CHAINLINK"));
+        .withArgs(true, formatBytes32String("CHAINLINK"));
     });
   });
 
