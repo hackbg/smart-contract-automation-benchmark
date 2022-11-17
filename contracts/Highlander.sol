@@ -15,6 +15,7 @@ contract Highlander is AutomationCompatible {
 
     function exec(bytes32 network) public {
         bool success = shouldExec();
+
         emit Executed(success, network);
 
         if (success) {

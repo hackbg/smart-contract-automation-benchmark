@@ -26,19 +26,15 @@ describe("RapidFire", function () {
   });
 
   describe("Command", function () {
-    it("should always execute", async function () {
+    it("should not fail if called repeatedly", async function () {
       const { rapidFire } = await loadFixture(deployRapidFireFixture);
 
-      await expect(rapidFire.exec(testNetwork))
-        .to.emit(rapidFire, "Executed")
-        .withArgs(testNetwork);
+      await rapidFire.exec(testNetwork);
 
-      await expect(rapidFire.exec(testNetwork))
-        .to.emit(rapidFire, "Executed")
-        .withArgs(testNetwork);
+      await expect(rapidFire.exec(testNetwork)).to.not.be.reverted;
     });
 
-    it("should emit event on execution", async function () {
+    it("should emit event on execution with network name as param", async function () {
       const { rapidFire } = await loadFixture(deployRapidFireFixture);
 
       await expect(rapidFire.exec(testNetwork))
@@ -48,7 +44,7 @@ describe("RapidFire", function () {
   });
 
   describe("Chainlink Automation", function () {
-    it("should perform upkeep with network name", async function () {
+    it("should perform upkeep with correct network param", async function () {
       const { rapidFire } = await loadFixture(deployRapidFireFixture);
 
       await expect(rapidFire.performUpkeep(HashZero))
@@ -66,7 +62,7 @@ describe("RapidFire", function () {
       expect(canExec).to.be.true;
     });
 
-    it("should return exec selector with network name arg", async function () {
+    it("should return exec selector with correct network param", async function () {
       const { rapidFire } = await loadFixture(deployRapidFireFixture);
 
       const [, execPayload] = await rapidFire.checker();
