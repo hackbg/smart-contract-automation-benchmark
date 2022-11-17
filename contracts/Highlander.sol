@@ -2,11 +2,12 @@
 pragma solidity 0.8.17;
 
 import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
-import "./interfaces/IConditionalCommand.sol";
 
-contract Highlander is IConditionalCommand, AutomationCompatible {
+contract Highlander is AutomationCompatible {
     uint256 public immutable i_interval;
     uint256 public s_lastTimestamp;
+
+    event Executed(bool indexed success, bytes32 indexed network);
 
     constructor(uint256 interval) {
         i_interval = interval;
@@ -14,9 +15,10 @@ contract Highlander is IConditionalCommand, AutomationCompatible {
 
     function exec(bytes32 network) public {
         bool success = shouldExec();
+
         emit Executed(success, network);
 
-        if(success){
+        if (success) {
             s_lastTimestamp = block.timestamp;
         }
     }
@@ -48,6 +50,6 @@ contract Highlander is IConditionalCommand, AutomationCompatible {
         returns (bool canExec, bytes memory execPayload)
     {
         canExec = shouldExec();
-        execPayload = abi.encodeCall(IConditionalCommand.exec, "GELATO");
+        execPayload = abi.encodeCall(this.exec, "GELATO");
     }
 }

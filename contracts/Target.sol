@@ -2,11 +2,12 @@
 pragma solidity 0.8.17;
 
 import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
-import "./interfaces/IConditionalCommand.sol";
 
-contract Target is IConditionalCommand, AutomationCompatible {
+contract Target is AutomationCompatible {
     uint256 public immutable i_interval;
     uint256 public immutable i_window;
+
+    event Executed(bool indexed success, bytes32 indexed network);
 
     constructor(uint256 interval, uint256 window) {
         i_interval = interval;
@@ -45,6 +46,6 @@ contract Target is IConditionalCommand, AutomationCompatible {
         returns (bool canExec, bytes memory execPayload)
     {
         canExec = shouldExec();
-        execPayload = abi.encodeCall(IConditionalCommand.exec, "GELATO");
+        execPayload = abi.encodeCall(this.exec, "GELATO");
     }
 }

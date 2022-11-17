@@ -45,7 +45,36 @@ describe("Highlander", function () {
 
   describe("Command", function () {
     describe("Execution", function () {
-      it("should have false as event argument if interval's not passed", async function () {
+      it("should update last timestamp when interval's passed", async function () {
+        const { highlander, interval } = await loadFixture(
+          deployHighlanderFixture
+        );
+
+        await highlander.exec(testNetwork);
+        await time.increase(interval + 1);
+
+        const lastTimestampBeforeExec = await highlander.s_lastTimestamp();
+        await highlander.exec(testNetwork);
+        const lastTimestampAfterExec = await highlander.s_lastTimestamp();
+
+        expect(lastTimestampBeforeExec).to.be.lt(lastTimestampAfterExec);
+      });
+
+      it("should not update last timestamp when interval's not passed", async function () {
+        const { highlander } = await loadFixture(deployHighlanderFixture);
+
+        await highlander.exec(testNetwork);
+
+        const lastTimestampBeforeExec = await highlander.s_lastTimestamp();
+        await highlander.exec(testNetwork);
+        const lastTimestampAfterExec = await highlander.s_lastTimestamp();
+
+        expect(lastTimestampBeforeExec).to.be.eq(lastTimestampAfterExec);
+      });
+    });
+
+    describe("Events", function () {
+      it("should be logged as failed when interval's not passed", async function () {
         const { highlander } = await loadFixture(deployHighlanderFixture);
 
         await highlander.exec(testNetwork);
@@ -55,23 +84,7 @@ describe("Highlander", function () {
           .withArgs(false, testNetwork);
       });
 
-      it("should execute if interval's passed", async function () {
-        const { highlander, interval } = await loadFixture(
-          deployHighlanderFixture
-        );
-
-        await highlander.exec(testNetwork);
-
-        await time.increase(interval + 1);
-
-        await expect(highlander.exec(testNetwork))
-          .to.emit(highlander, "Executed")
-          .withArgs(true, testNetwork);
-      });
-    });
-
-    describe("Events", function () {
-      it("should emit when execution succeeds", async function () {
+      it("should be logged as successful when interval's passed", async function () {
         const { highlander, interval } = await loadFixture(
           deployHighlanderFixture
         );
@@ -88,7 +101,7 @@ describe("Highlander", function () {
   });
 
   describe("Chainlink Automation", function () {
-    it("should perform upkeep with network name", async function () {
+    it("should perform upkeep with correct network param", async function () {
       const { highlander } = await loadFixture(deployHighlanderFixture);
 
       await expect(highlander.performUpkeep(HashZero))
@@ -98,7 +111,7 @@ describe("Highlander", function () {
   });
 
   describe("Gelato Ops", function () {
-    it("should return exec selector with network name arg", async function () {
+    it("should return exec selector with correct network param", async function () {
       const { highlander } = await loadFixture(deployHighlanderFixture);
 
       const [, execPayload] = await highlander.checker();

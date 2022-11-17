@@ -48,58 +48,31 @@ describe("Target", function () {
   });
 
   describe("Command", function () {
-    describe("Execution", function () {
-      it("should emit event with false as success parameter", async function () {
-        const { target, interval, window } = await loadFixture(
-          deployTargetFixture
-        );
+    it("should be logged as failed outside of target window", async function () {
+      const { target, interval, window } = await loadFixture(
+        deployTargetFixture
+      );
 
-        await mineUpTo(interval - window);
+      await mineUpTo(interval - window);
 
-        await expect(target.exec(testNetwork))
-          .to.emit(target, "Executed")
-          .withArgs(false, testNetwork);
-      });
-
-      it("should emit event with false as success parameter", async function () {
-        const { target, interval } = await loadFixture(deployTargetFixture);
-
-        await mineUpTo(interval);
-
-        await expect(target.exec(testNetwork))
-          .to.emit(target, "Executed")
-          .withArgs(true, testNetwork);
-      });
+      await expect(target.exec(testNetwork))
+        .to.emit(target, "Executed")
+        .withArgs(false, testNetwork);
     });
 
-    describe("Events", function () {
-      it("should emit when execution succeeds", async function () {
-        const { target, interval } = await loadFixture(deployTargetFixture);
+    it("should be logged as successful throughout target window", async function () {
+      const { target, interval } = await loadFixture(deployTargetFixture);
 
-        await mineUpTo(interval);
+      await mineUpTo(interval);
 
-        await expect(target.exec(testNetwork))
-          .to.emit(target, "Executed")
-          .withArgs(true, testNetwork);
-      });
-
-      it("should emit when execution fails", async function () {
-        const { target } = await loadFixture(deployTargetFixture);
-
-        let failedExecTx;
-        try {
-          failedExecTx = await target.exec(testNetwork);
-        } catch (exception) {
-          expect(failedExecTx)
-            .to.emit(target, "Executed")
-            .withArgs(false, testNetwork);
-        }
-      });
+      await expect(target.exec(testNetwork))
+        .to.emit(target, "Executed")
+        .withArgs(true, testNetwork);
     });
   });
 
   describe("Chainlink Automation", function () {
-    it("should perform upkeep with network name", async function () {
+    it("should perform upkeep with correct network param", async function () {
       const { target } = await loadFixture(deployTargetFixture);
 
       await expect(target.performUpkeep(HashZero))
@@ -109,7 +82,7 @@ describe("Target", function () {
   });
 
   describe("Gelato Ops", function () {
-    it("should return exec selector with network name arg", async function () {
+    it("should return exec selector with correct network param", async function () {
       const { target } = await loadFixture(deployTargetFixture);
 
       const [, execPayload] = await target.checker();
