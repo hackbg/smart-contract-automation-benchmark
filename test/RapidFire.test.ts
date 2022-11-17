@@ -31,11 +31,11 @@ describe("RapidFire", function () {
 
       await expect(rapidFire.exec(testNetwork))
         .to.emit(rapidFire, "Executed")
-        .withArgs(true, testNetwork);
+        .withArgs(testNetwork);
 
       await expect(rapidFire.exec(testNetwork))
         .to.emit(rapidFire, "Executed")
-        .withArgs(true, testNetwork);
+        .withArgs(testNetwork);
     });
 
     it("should emit event on execution", async function () {
@@ -43,7 +43,7 @@ describe("RapidFire", function () {
 
       await expect(rapidFire.exec(testNetwork))
         .to.emit(rapidFire, "Executed")
-        .withArgs(true, testNetwork);
+        .withArgs(testNetwork);
     });
   });
 
@@ -53,7 +53,7 @@ describe("RapidFire", function () {
 
       await expect(rapidFire.performUpkeep(HashZero))
         .to.emit(rapidFire, "Executed")
-        .withArgs(true, formatBytes32String("CHAINLINK"));
+        .withArgs(formatBytes32String("CHAINLINK"));
     });
   });
 
