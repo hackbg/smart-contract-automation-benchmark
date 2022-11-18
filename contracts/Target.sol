@@ -35,16 +35,18 @@ contract Target is AutomationCompatible {
      * @param network Name of the solution servicing the contract
      */
     function exec(bytes32 network) public {
-        bool success = shouldExec();
+        bool success = block.number % i_interval <= i_window;
         emit Executed(success, network);
     }
 
     /**
      * @notice The condition based on which solutions trigger execution
+     * @dev Calculated for the next block as that is earliest chance to execute.
      * @return Indicates whether the contract should be serviced
      */
     function shouldExec() public view returns (bool) {
-        return block.number % i_interval <= i_window;
+        uint256 nextBlock = block.number + 1;
+        return nextBlock % i_interval <= i_window;
     }
 
     // CHAINLINK AUTOMATION
