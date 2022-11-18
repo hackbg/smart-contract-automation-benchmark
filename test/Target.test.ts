@@ -34,15 +34,21 @@ describe("Target", function () {
       expect(await target.shouldExec()).to.be.false;
     });
 
-    it("should be true throughout target window", async function () {
+    it("should be true a block prior window openning", async function () {
       const { target, interval, window } = await loadFixture(
         deployTargetFixture
       );
 
-      await mineUpTo(interval);
+      await mineUpTo(interval - 1);
       expect(await target.shouldExec()).to.be.true;
+    });
 
-      await mineUpTo(interval + window);
+    it("should be true a block prior closing window", async function () {
+      const { target, interval, window } = await loadFixture(
+        deployTargetFixture
+      );
+
+      await mineUpTo(interval + window - 1);
       expect(await target.shouldExec()).to.be.true;
     });
   });
@@ -73,7 +79,9 @@ describe("Target", function () {
 
   describe("Chainlink Automation", function () {
     it("should perform upkeep with correct network param", async function () {
-      const { target } = await loadFixture(deployTargetFixture);
+      const { target, interval } = await loadFixture(deployTargetFixture);
+
+      await mineUpTo(interval);
 
       await expect(target.performUpkeep(HashZero))
         .to.emit(target, "Executed")
