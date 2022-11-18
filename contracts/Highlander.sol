@@ -18,7 +18,7 @@ contract Highlander is AutomationCompatible {
 
     /**
      * @notice Captures an execution with details required to compare solutions
-     * @param success indicates wether the execution was within the target window
+     * @param success indicates whether the execution was within the target window
      * @param network name of competitor solution servicing the contract
      */
     event Executed(bool indexed success, bytes32 indexed network);
@@ -45,7 +45,7 @@ contract Highlander is AutomationCompatible {
 
     /**
      * @notice The condition based on which solutions trigger execution
-     * @return Indicates wether the contract should be serviced
+     * @return Indicates whether the contract should be serviced
      */
     function shouldExec() public view returns (bool) {
         return block.timestamp - s_lastTimestamp > i_interval;

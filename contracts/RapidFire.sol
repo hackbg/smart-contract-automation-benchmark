@@ -25,7 +25,7 @@ contract RapidFire is AutomationCompatible {
 
     /**
      * @notice The condition based on which solutions trigger execution
-     * @return Indicates wether the contract should be serviced
+     * @return Indicates whether the contract should be serviced
      */
     function shouldExec() public pure returns (bool) {
         return true;
