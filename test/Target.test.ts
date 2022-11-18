@@ -54,26 +54,50 @@ describe("Target", function () {
   });
 
   describe("Command", function () {
-    it("should be logged as failed outside of target window", async function () {
-      const { target, interval, window } = await loadFixture(
-        deployTargetFixture
-      );
+    describe("During target window", async function () {
+      it("should be logged as successful at the start of the window", async function () {
+        const { target, interval } = await loadFixture(deployTargetFixture);
+        await mineUpTo(interval - 1);
 
-      await mineUpTo(interval - window);
+        await expect(target.exec(testNetwork))
+          .to.emit(target, "Executed")
+          .withArgs(true, testNetwork);
+      });
 
-      await expect(target.exec(testNetwork))
-        .to.emit(target, "Executed")
-        .withArgs(false, testNetwork);
+      it("should be logged as successful at the end of the window", async function () {
+        const { target, interval, window } = await loadFixture(
+          deployTargetFixture
+        );
+        await mineUpTo(interval + window - 1);
+
+        await expect(target.exec(testNetwork))
+          .to.emit(target, "Executed")
+          .withArgs(true, testNetwork);
+      });
     });
 
-    it("should be logged as successful throughout target window", async function () {
-      const { target, interval } = await loadFixture(deployTargetFixture);
+    describe("Outside target window", async function () {
+      it("should not be logged as successful 1 block before start of the window", async function () {
+        const { target, interval } = await loadFixture(deployTargetFixture);
 
-      await mineUpTo(interval);
+        await mineUpTo(interval - 2);
 
-      await expect(target.exec(testNetwork))
-        .to.emit(target, "Executed")
-        .withArgs(true, testNetwork);
+        await expect(target.exec(testNetwork))
+          .to.emit(target, "Executed")
+          .withArgs(false, testNetwork);
+      });
+
+      it("should not be logged as successful 1 block after end of the window", async function () {
+        const { target, interval, window } = await loadFixture(
+          deployTargetFixture
+        );
+
+        await mineUpTo(interval + window);
+
+        await expect(target.exec(testNetwork))
+          .to.emit(target, "Executed")
+          .withArgs(false, testNetwork);
+      });
     });
   });
 
