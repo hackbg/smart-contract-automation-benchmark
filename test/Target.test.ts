@@ -31,7 +31,7 @@ describe("Target", function () {
 
       await mineUpTo(interval - window);
 
-      expect(await target.shouldExec()).to.be.false;
+      expect(await target.shouldExec(testNetwork)).to.be.false;
     });
 
     it("should be true a block prior window openning", async function () {
@@ -40,7 +40,7 @@ describe("Target", function () {
       );
 
       await mineUpTo(interval - 1);
-      expect(await target.shouldExec()).to.be.true;
+      expect(await target.shouldExec(testNetwork)).to.be.true;
     });
 
     it("should be true a block prior closing window", async function () {
@@ -49,7 +49,28 @@ describe("Target", function () {
       );
 
       await mineUpTo(interval + window - 1);
-      expect(await target.shouldExec()).to.be.true;
+      expect(await target.shouldExec(testNetwork)).to.be.true;
+    });
+
+    it("should be false if already executed in the current window", async function () {
+      const { target, interval, window } = await loadFixture(
+        deployTargetFixture
+      );
+
+      await mineUpTo(interval - 1);
+      expect(await target.shouldExec(testNetwork)).to.be.true;
+
+      // executing on the first block of the window
+      await target.exec(testNetwork);
+
+      // checking on the next block
+      // should be false although inside window
+      expect(await target.shouldExec(testNetwork)).to.be.false;
+
+      // checking at the last block of the window
+      await mineUpTo(interval + window - 1);
+      // should be false although inside window
+      expect(await target.shouldExec(testNetwork)).to.be.false;
     });
   });
 
