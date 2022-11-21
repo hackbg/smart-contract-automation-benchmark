@@ -14,6 +14,7 @@ contract Target is AutomationCompatible {
 
     // Number of blocks defining the window of opportunity
     uint256 public immutable i_window;
+    mapping(bytes32 => uint32) lastWindowNumber;
 
     /**
      * @notice Captures an execution with details required to compare solutions
@@ -35,8 +36,32 @@ contract Target is AutomationCompatible {
      * @param network Name of the solution servicing the contract
      */
     function exec(bytes32 network) public {
-        bool success = block.number % i_interval <= i_window;
+        bool isBlockNumberInCurrentWindow = block.number % i_interval <=
+            i_window;
+
+        bool success = isBlockNumberInCurrentWindow &&
+            !isWindowAlreadyServiced(block.number, network);
+
+        if (success) {
+            lastWindowNumber[network] = uint32(block.number / i_interval + 1);
+        }
+
         emit Executed(success, network);
+    }
+
+    /**
+     * @notice Method that checks is current block is in a window that has already been serviced
+     * @dev uses uint16 as there's no way that we'd reach 65535 window number
+     * @param blockNumber A block number to check its window number
+     * @param network Name of the solution servicing the contract
+     */
+    function isWindowAlreadyServiced(uint256 blockNumber, bytes32 network)
+        public
+        view
+        returns (bool)
+    {
+        uint16 currentWindowNumber = uint16(blockNumber / i_interval + 1);
+        return (currentWindowNumber <= lastWindowNumber[network]);
     }
 
     /**
@@ -44,9 +69,13 @@ contract Target is AutomationCompatible {
      * @dev Calculated for the next block as that is earliest chance to execute.
      * @return Indicates whether the contract should be serviced
      */
-    function shouldExec() public view returns (bool) {
+    function shouldExec(bytes32 network) public view returns (bool) {
         uint256 nextBlock = block.number + 1;
-        return nextBlock % i_interval <= i_window;
+
+        bool isBlockNumberInWindow = nextBlock % i_interval <= i_window;
+        return
+            isBlockNumberInWindow &&
+            !isWindowAlreadyServiced(block.number + 1, network);
     }
 
     // CHAINLINK AUTOMATION
@@ -57,7 +86,7 @@ contract Target is AutomationCompatible {
         override
         returns (bool upkeepNeeded, bytes memory)
     {
-        upkeepNeeded = shouldExec();
+        upkeepNeeded = shouldExec("CHAINLINK");
     }
 
     function performUpkeep(bytes calldata) external override {
@@ -71,7 +100,7 @@ contract Target is AutomationCompatible {
         view
         returns (bool canExec, bytes memory execPayload)
     {
-        canExec = shouldExec();
+        canExec = shouldExec("GELATO");
         execPayload = abi.encodeCall(this.exec, "GELATO");
     }
 }
