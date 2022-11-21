@@ -41,12 +41,11 @@ contract Target is AutomationCompatible {
 
     /**
      * @notice The condition based on which solutions trigger execution
-     * @dev Calculated for the next block as that is earliest chance to execute.
      * @return Indicates whether the contract should be serviced
      */
     function shouldExec() public view returns (bool) {
         uint256 nextBlock = block.number + 1;
-        return nextBlock % i_interval <= i_window;
+        return nextBlock % i_interval == 0;
     }
 
     // CHAINLINK AUTOMATION

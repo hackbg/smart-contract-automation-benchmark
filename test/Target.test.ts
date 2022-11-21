@@ -42,15 +42,6 @@ describe("Target", function () {
       await mineUpTo(interval - 1);
       expect(await target.shouldExec()).to.be.true;
     });
-
-    it("should be true a block prior closing window", async function () {
-      const { target, interval, window } = await loadFixture(
-        deployTargetFixture
-      );
-
-      await mineUpTo(interval + window - 1);
-      expect(await target.shouldExec()).to.be.true;
-    });
   });
 
   describe("Command", function () {
