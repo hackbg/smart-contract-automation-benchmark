@@ -15,8 +15,8 @@ contract Target is AutomationCompatible {
     // Number of blocks defining the window of opportunity
     uint256 public immutable i_window;
 
-    // Last execution block number by network
-    mapping(bytes32 => uint256) public s_lastBlockNumber;
+    // Window number of last execution by network
+    mapping(bytes32 => uint256) public s_lastWindow;
 
     /**
      * @notice Captures an execution with details required to compare solutions
@@ -41,7 +41,7 @@ contract Target is AutomationCompatible {
         bool success = block.number % i_interval <= i_window;
         emit Executed(success, network);
 
-        s_lastBlockNumber[network] = block.number;
+        s_lastWindow[network] = getWindow(block.number);
     }
 
     /**
@@ -51,10 +51,18 @@ contract Target is AutomationCompatible {
      * @return Indicates whether the contract should be serviced
      */
     function shouldExec(bytes32 network) public view returns (bool) {
-        if (s_lastBlockNumber[network] + i_window > block.number) return false;
-
         uint256 nextBlock = block.number + 1;
+        uint256 currentWindow = getWindow(nextBlock);
+
+        if (currentWindow == s_lastWindow[network]) {
+            return false;
+        }
+
         return nextBlock % i_interval <= i_window;
+    }
+
+    function getWindow(uint256 blockNumber) public view returns (uint256) {
+        return blockNumber / i_interval;
     }
 
     // CHAINLINK AUTOMATION
