@@ -72,6 +72,18 @@ describe("Target", function () {
       // should be false although inside window
       expect(await target.shouldExec(testNetwork)).to.be.false;
     });
+
+    it("should allow different networks to execute in the same window", async function () {
+      const { target, interval } = await loadFixture(deployTargetFixture);
+      const testNetwork2 = formatBytes32String("TEST2");
+
+      await mineUpTo(interval);
+
+      await target.exec(testNetwork);
+      expect(await target.shouldExec(testNetwork)).to.be.false;
+
+      expect(await target.shouldExec(testNetwork2)).to.be.true;
+    });
   });
 
   describe("Command", function () {
