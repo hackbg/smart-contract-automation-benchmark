@@ -20,11 +20,15 @@ contract Target is AutomationCompatible {
 
     /**
      * @notice Captures an execution with details required to compare solutions
-     * @dev Latency is measured by the tx block number in the dashboard query
      * @param success Indicates whether the execution was within the target window
+     * @param latency Elapsed blocks from when a trigger condition is met
      * @param network Name of competitor solution servicing the contract
      */
-    event Executed(bool indexed success, bytes32 indexed network);
+    event Executed(
+        bool indexed success,
+        uint256 indexed latency,
+        bytes32 indexed network
+    );
 
     constructor(uint256 interval, uint256 window) {
         i_interval = interval;
@@ -38,8 +42,10 @@ contract Target is AutomationCompatible {
      * @param network Name of the solution servicing the contract
      */
     function exec(bytes32 network) public {
-        bool success = block.number % i_interval <= i_window;
-        emit Executed(success, network);
+        uint256 latency = block.number % i_interval;
+        bool success = latency <= i_window;
+
+        emit Executed(success, latency, network);
 
         s_lastWindow[network] = getWindow(block.number);
     }

@@ -94,7 +94,7 @@ describe("Target", function () {
 
         await expect(target.exec(testNetwork))
           .to.emit(target, "Executed")
-          .withArgs(true, testNetwork);
+          .withArgs(true, 0, testNetwork);
       });
 
       it("should be logged as successful at the end of the window", async function () {
@@ -105,7 +105,7 @@ describe("Target", function () {
 
         await expect(target.exec(testNetwork))
           .to.emit(target, "Executed")
-          .withArgs(true, testNetwork);
+          .withArgs(true, window, testNetwork);
       });
     });
 
@@ -117,7 +117,7 @@ describe("Target", function () {
 
         await expect(target.exec(testNetwork))
           .to.emit(target, "Executed")
-          .withArgs(false, testNetwork);
+          .withArgs(false, interval - 1, testNetwork);
       });
 
       it("should not be logged as successful 1 block after end of the window", async function () {
@@ -129,7 +129,7 @@ describe("Target", function () {
 
         await expect(target.exec(testNetwork))
           .to.emit(target, "Executed")
-          .withArgs(false, testNetwork);
+          .withArgs(false, window + 1, testNetwork);
       });
     });
   });
@@ -142,7 +142,7 @@ describe("Target", function () {
 
       await expect(target.performUpkeep(HashZero))
         .to.emit(target, "Executed")
-        .withArgs(true, formatBytes32String("CHAINLINK"));
+        .withArgs(true, 1, formatBytes32String("CHAINLINK"));
     });
   });
 
