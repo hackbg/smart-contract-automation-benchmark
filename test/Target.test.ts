@@ -24,31 +24,12 @@ describe("Target", function () {
   }
 
   describe("Condition", function () {
-    it("should be false outside of target window", async function () {
+    it("should be true if outside of target window", async function () {
       const { target, interval, window } = await loadFixture(
         deployTargetFixture
       );
 
-      await mineUpTo(interval - window);
-
-      expect(await target.shouldExec(testNetwork)).to.be.false;
-    });
-
-    it("should be true a block prior window openning", async function () {
-      const { target, interval, window } = await loadFixture(
-        deployTargetFixture
-      );
-
-      await mineUpTo(interval - 1);
-      expect(await target.shouldExec(testNetwork)).to.be.true;
-    });
-
-    it("should be true a block prior closing window", async function () {
-      const { target, interval, window } = await loadFixture(
-        deployTargetFixture
-      );
-
-      await mineUpTo(interval + window - 1);
+      await mineUpTo(interval + window);
       expect(await target.shouldExec(testNetwork)).to.be.true;
     });
 
