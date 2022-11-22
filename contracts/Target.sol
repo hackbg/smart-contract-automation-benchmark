@@ -20,8 +20,8 @@ contract Target is AutomationCompatible {
 
     /**
      * @notice Captures an execution with details required to compare solutions
-     * @dev Latency is measured by the tx block number in the dashboard query
      * @param success Indicates whether the execution was within the target window
+     * @param latency Elapsed blocks from when a trigger condition is met
      * @param network Name of competitor solution servicing the contract
      */
     event Executed(
