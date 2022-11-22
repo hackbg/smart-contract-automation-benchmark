@@ -15,11 +15,14 @@ contract Target is AutomationCompatible {
     // Number of blocks defining the window of opportunity
     uint256 public immutable i_window;
 
+    // Window number of last execution by network
+    mapping(bytes32 => uint256) public s_lastWindow;
+
     /**
      * @notice Captures an execution with details required to compare solutions
      * @dev Latency is measured by the tx block number in the dashboard query
-     * @param success indicates whether the execution was within the target window
-     * @param network name of competitor solution servicing the contract
+     * @param success Indicates whether the execution was within the target window
+     * @param network Name of competitor solution servicing the contract
      */
     event Executed(bool indexed success, bytes32 indexed network);
 
@@ -37,16 +40,29 @@ contract Target is AutomationCompatible {
     function exec(bytes32 network) public {
         bool success = block.number % i_interval <= i_window;
         emit Executed(success, network);
+
+        s_lastWindow[network] = getWindow(block.number);
     }
 
     /**
      * @notice The condition based on which solutions trigger execution
-     * @dev Calculated for the next block as that is earliest chance to execute.
+     * @dev Prevents from triggering execution more than once per window
+     * @param network Name of competitor solution servicing the contract
      * @return Indicates whether the contract should be serviced
      */
-    function shouldExec() public view returns (bool) {
+    function shouldExec(bytes32 network) public view returns (bool) {
         uint256 nextBlock = block.number + 1;
+        uint256 currentWindow = getWindow(nextBlock);
+
+        if (currentWindow == s_lastWindow[network]) {
+            return false;
+        }
+
         return nextBlock % i_interval <= i_window;
+    }
+
+    function getWindow(uint256 blockNumber) public view returns (uint256) {
+        return blockNumber / i_interval;
     }
 
     // CHAINLINK AUTOMATION
@@ -57,7 +73,7 @@ contract Target is AutomationCompatible {
         override
         returns (bool upkeepNeeded, bytes memory)
     {
-        upkeepNeeded = shouldExec();
+        upkeepNeeded = shouldExec("CHAINLINK");
     }
 
     function performUpkeep(bytes calldata) external override {
@@ -71,7 +87,7 @@ contract Target is AutomationCompatible {
         view
         returns (bool canExec, bytes memory execPayload)
     {
-        canExec = shouldExec();
+        canExec = shouldExec("GELATO");
         execPayload = abi.encodeCall(this.exec, "GELATO");
     }
 }
