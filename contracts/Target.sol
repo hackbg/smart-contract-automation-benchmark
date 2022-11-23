@@ -42,12 +42,12 @@ contract Target is AutomationCompatible {
      * @param network Name of the solution servicing the contract
      */
     function exec(bytes32 network) public {
+        s_lastWindow[network] = getWindow(block.number);
+
         uint256 latency = block.number % i_interval;
         bool success = latency <= i_window;
 
         emit Executed(success, latency, network);
-
-        s_lastWindow[network] = getWindow(block.number);
     }
 
     /**
