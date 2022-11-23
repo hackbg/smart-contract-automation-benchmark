@@ -60,11 +60,7 @@ contract Target is AutomationCompatible {
         uint256 nextBlock = block.number + 1;
         uint256 currentWindow = getWindow(nextBlock);
 
-        if (currentWindow == s_lastWindow[network]) {
-            return false;
-        }
-
-        return nextBlock % i_interval <= i_window;
+        return currentWindow != s_lastWindow[network];
     }
 
     function getWindow(uint256 blockNumber) public view returns (uint256) {

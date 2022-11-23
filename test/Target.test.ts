@@ -24,52 +24,21 @@ describe("Target", function () {
   }
 
   describe("Condition", function () {
-    it("should be false outside of target window", async function () {
-      const { target, interval, window } = await loadFixture(
-        deployTargetFixture
-      );
+    it("should be true if not executed in the current window", async function () {
+      const { target, interval } = await loadFixture(deployTargetFixture);
 
-      await mineUpTo(interval - window);
+      await mineUpTo(interval);
 
-      expect(await target.shouldExec(testNetwork)).to.be.false;
-    });
-
-    it("should be true a block prior window openning", async function () {
-      const { target, interval, window } = await loadFixture(
-        deployTargetFixture
-      );
-
-      await mineUpTo(interval - 1);
-      expect(await target.shouldExec(testNetwork)).to.be.true;
-    });
-
-    it("should be true a block prior closing window", async function () {
-      const { target, interval, window } = await loadFixture(
-        deployTargetFixture
-      );
-
-      await mineUpTo(interval + window - 1);
       expect(await target.shouldExec(testNetwork)).to.be.true;
     });
 
     it("should be false if already executed in the current window", async function () {
-      const { target, interval, window } = await loadFixture(
-        deployTargetFixture
-      );
+      const { target, interval } = await loadFixture(deployTargetFixture);
 
-      await mineUpTo(interval - 1);
-      expect(await target.shouldExec(testNetwork)).to.be.true;
+      await mineUpTo(interval);
 
-      // executing on the first block of the window
       await target.exec(testNetwork);
 
-      // checking on the next block
-      // should be false although inside window
-      expect(await target.shouldExec(testNetwork)).to.be.false;
-
-      // checking at the last block of the window
-      await mineUpTo(interval + window - 1);
-      // should be false although inside window
       expect(await target.shouldExec(testNetwork)).to.be.false;
     });
 
@@ -110,16 +79,6 @@ describe("Target", function () {
     });
 
     describe("Outside target window", async function () {
-      it("should not be logged as successful 1 block before start of the window", async function () {
-        const { target, interval } = await loadFixture(deployTargetFixture);
-
-        await mineUpTo(interval - 2);
-
-        await expect(target.exec(testNetwork))
-          .to.emit(target, "Executed")
-          .withArgs(false, interval - 1, testNetwork);
-      });
-
       it("should not be logged as successful 1 block after end of the window", async function () {
         const { target, interval, window } = await loadFixture(
           deployTargetFixture
@@ -130,6 +89,16 @@ describe("Target", function () {
         await expect(target.exec(testNetwork))
           .to.emit(target, "Executed")
           .withArgs(false, window + 1, testNetwork);
+      });
+
+      it("should not be logged as successful 1 block before start of the window", async function () {
+        const { target, interval } = await loadFixture(deployTargetFixture);
+
+        await mineUpTo(interval - 2);
+
+        await expect(target.exec(testNetwork))
+          .to.emit(target, "Executed")
+          .withArgs(false, interval - 1, testNetwork);
       });
     });
   });
