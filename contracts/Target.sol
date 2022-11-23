@@ -30,6 +30,12 @@ contract Target is AutomationCompatible {
         bytes32 indexed network
     );
 
+    event PerformInfo(
+        uint256 indexed blockNumber,
+        uint256 indexed windowNumber,
+        address indexed txOrigin
+    );
+
     constructor(uint256 interval, uint256 window) {
         i_interval = interval;
         i_window = window;
@@ -73,12 +79,21 @@ contract Target is AutomationCompatible {
         external
         view
         override
-        returns (bool upkeepNeeded, bytes memory)
+        returns (bool upkeepNeeded, bytes memory performData)
     {
         upkeepNeeded = shouldExec("CHAINLINK");
+        performData = abi.encode(
+            block.number,
+            getWindow(block.number + 1),
+            tx.origin
+        );
     }
 
-    function performUpkeep(bytes calldata) external override {
+    function performUpkeep(bytes calldata performData) external override {
+        (uint256 blockNumber, uint256 windowNumber, address txOrigin) = abi
+        .decode(performData, (uint256, uint256, address));
+        emit PerformInfo(blockNumber, windowNumber, txOrigin);
+
         exec("CHAINLINK");
     }
 

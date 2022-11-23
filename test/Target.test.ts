@@ -109,7 +109,9 @@ describe("Target", function () {
 
       await mineUpTo(interval);
 
-      await expect(target.performUpkeep(HashZero))
+      let { performData } = await target.checkUpkeep(HashZero);
+
+      await expect(target.performUpkeep(performData))
         .to.emit(target, "Executed")
         .withArgs(true, 1, formatBytes32String("CHAINLINK"));
     });
