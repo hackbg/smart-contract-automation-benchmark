@@ -30,6 +30,13 @@ contract Target is AutomationCompatible {
         bytes32 indexed network
     );
 
+    /**
+     * @notice Reverts when executing an already serviced window
+     * @param network Name of the solution servicing the contract
+     * @param windowNumber Current window number when the error was triggered
+     */
+    error WindowAlreadyServiced(bytes32 network, uint256 windowNumber);
+
     constructor(uint256 interval, uint256 window) {
         i_interval = interval;
         i_window = window;
@@ -42,7 +49,12 @@ contract Target is AutomationCompatible {
      * @param network Name of the solution servicing the contract
      */
     function exec(bytes32 network) public {
-        s_lastWindow[network] = getWindow(block.number);
+        uint256 currentWindow = getWindow(block.number);
+        if (currentWindow == s_lastWindow[network]) {
+            revert WindowAlreadyServiced(network, currentWindow);
+        }
+
+        s_lastWindow[network] = currentWindow;
 
         uint256 latency = block.number % i_interval;
         bool success = latency <= i_window;
