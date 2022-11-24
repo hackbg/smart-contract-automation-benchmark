@@ -76,6 +76,17 @@ describe("Target", function () {
           .to.emit(target, "Executed")
           .withArgs(true, window, testNetwork);
       });
+
+      it("should revert when executing in already serviced window", async function () {
+        const { target, interval } = await loadFixture(deployTargetFixture);
+
+        await mineUpTo(interval);
+        await target.exec(testNetwork);
+
+        await expect(target.exec(testNetwork))
+          .to.be.revertedWithCustomError(target, "WindowAlreadyServiced")
+          .withArgs(1, testNetwork);
+      });
     });
 
     describe("Outside target window", async function () {
@@ -94,7 +105,7 @@ describe("Target", function () {
       it("should not be logged as successful 1 block before start of the window", async function () {
         const { target, interval } = await loadFixture(deployTargetFixture);
 
-        await mineUpTo(interval - 2);
+        await mineUpTo(2 * interval - 2);
 
         await expect(target.exec(testNetwork))
           .to.emit(target, "Executed")
