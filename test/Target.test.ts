@@ -85,7 +85,7 @@ describe("Target", function () {
 
         await expect(target.exec(testNetwork))
           .to.be.revertedWithCustomError(target, "WindowAlreadyServiced")
-          .withArgs(testNetwork, 1);
+          .withArgs(1, testNetwork);
       });
     });
 
