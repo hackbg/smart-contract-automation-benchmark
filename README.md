@@ -1,4 +1,4 @@
-# Automation Benchmark Smart Contracts
+# Smart Contract Automation Benchmark
 
 The goal of this project is to do a performance comparison of smart contract automation solutions.
 
@@ -6,7 +6,7 @@ Performance is measured via a statistical comparison of each system’s ability 
 
 The solutions included in this benchmark are [Chainlink Automation](https://automation.chain.link) and [Gelato Ops](https://app.gelato.network). The possibility to add new competitors is also part of the overall design and is expected to happen in the future.
 
-The results are reported in a dashboard that objectively shows how the solutions compare in performance in smart contract automation. The dashboard is built using [Dune Analytics](https://dune.com) and is not implemented in this repository.
+The results are reported in a dashboard that objectively shows how the solutions compare in performance in smart contract automation. The dashboard is built using [Dune Analytics](https://dune.com) with the queries included in the repository.
 
 #### Benchmark Contracts
 
@@ -21,16 +21,16 @@ The results are reported in a dashboard that objectively shows how the solutions
 
 #### Metrics
 
-- **First To Perform** - In a competitive situation, which system is the first to confirm a
+- **[First To Perform](/queries/dune/first-to-perform.sql)** - In a competitive situation, which system is the first to confirm a
   transaction after a common trigger condition has been met.
   - Units: Rank and winning %
-- **Latency** - Measure elapsed blocks from when a trigger condition is met and the transaction is confirmed.
+- **[Latency](/queries/dune/latency.sql)** - Measure elapsed blocks from when a trigger condition is met and the transaction is confirmed.
   - Units: blocks
-- **Fail to Perform** - Measure percent of missed opportunities to perform within a reasonable or typical timeframe. This metric is captured during periods of medium and high network congestion.
+- **[Fail to Perform](/queries/dune/fail-to-perform.sql)** - Measure percent of missed opportunities to perform within a reasonable or typical timeframe. This metric is captured during periods of medium and high network congestion.
   - Units: % missed
-- **User Cost** - Average price users pay per unit of gas. This is not the price of gas used by the transaction. This is the total transactional cost to the user such as value of tokens debited from their fund.
+- **[User Cost](/queries/dune/user-cost.sql)** - Average price users pay per unit of gas. This is not the price of gas used by the transaction. This is the total transactional cost to the user such as value of tokens debited from their fund.
   - Units: USD per gas unit (or USD per 10k gas)
-- **High Frequency** - Measure maximum transaction throughput.
+- **[High Frequency](/queries/dune/high-frequency.sql)** - Measure maximum transaction throughput.
   - Units: Rate (transactions/time)
 
 ## Setup
