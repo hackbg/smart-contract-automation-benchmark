@@ -16,7 +16,6 @@ The results are reported in a dashboard that objectively shows how the solutions
   - Latency
   - Fail to Perform
   - User Cost
-  - Decentralized nodes
 - **[RapidFire.sol](/contracts/RapidFire.sol)** - This contract is nearly identical to the Highlander contract. The only difference is that the trigger condition is always true. It tests how frequently each system can service one contract. There primary metric for this test:
   - High Frequency
 
@@ -31,8 +30,6 @@ The results are reported in a dashboard that objectively shows how the solutions
   - Units: % missed
 - **User Cost** - Average price users pay per unit of gas. This is not the price of gas used by the transaction. This is the total transactional cost to the user such as value of tokens debited from their fund.
   - Units: USD per gas unit (or USD per 10k gas)
-- **Decentralized Nodes** - Distinct count of nodes that service an upkeep.
-  - Units: distinct count of nodes (tx.origin)
 - **High Frequency** - Measure maximum transaction throughput.
   - Units: Rate (transactions/time)
 
