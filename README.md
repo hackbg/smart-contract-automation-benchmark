@@ -68,17 +68,99 @@ npx hardhat run scripts/deploy.ts --network <network>
 
 <details>
   <summary>How to run Highlander benchmark</summary>
-  ...
+
+1. Register your `Highlander` deployment as Upkeep on [Chainlink Automation](https://automation.chain.link/) with 200K gas limit. It requires minumum of 5 LINK but more may be needed depending on the network, the congestion and the timeframe you want to run this benchmark.
+
+2. Register the same `Highlander` deployment as Task on [Gelato Automation](https://app.gelato.network/).
+
+   2.1 Select `exec` as function to be automated.
+
+   2.2 Use the `Highlander` contract address as resolver and select the `checker` function to be called.
+
+   2.3 Deposit enough native tokens to allow running for the timeframe of the benchmark.
+
+3. Stop the Chainlink Upkeep and Gelato Task once the decided benchmark timeframe has ended.
+
+4. Submit your `Highlander` contract for decoding at [Dune Analytics](https://dune.com/contracts/new).
+
+5. Paste the [First To Perform query](/queries/dune/first-to-perform.sql) into a [new Dune query](https://dune.com/queries).
+
+6. Set all required parameters.
+
+   6.1 `Name of Dune project` is the name you set when submitting the contract for decoding.
+
+   6.2 `First block of test timeframe` must cut the first transaction which is won by the system that is registered first.
+
+   6.3 `Last block of test timeframe` marks the end of the benchmark timeframe.
+
+7. Run the query.
+
 </details>
 
 <details>
   <summary>How to run Target benchmark</summary>
-  ...
+
+1. Register your `Target` deployment as Upkeep on [Chainlink Automation](https://automation.chain.link/) with 200K gas limit. It requires minumum of 5 LINK but more may be needed depending on the network, the congestion and the timeframe you want to run this benchmark.
+
+2. Register the same `Target` deployment as Task on [Gelato Automation](https://app.gelato.network/).
+
+   2.1 Select `exec` as function to be automated.
+
+   2.2 Use the `Target` contract address as resolver and select the `checker` function to be called.
+
+   2.3 Deposit enough native tokens to allow running for the timeframe of the benchmark.
+
+3. Stop the Chainlink Upkeep and Gelato Task once the decided benchmark timeframe has ended.
+
+4. Submit your `Target` contract for decoding at [Dune Analytics](https://dune.com/contracts/new).
+
+5. Paste the [Latency query](/queries/dune/latency.sql)) into a [new Dune query](https://dune.com/queries).
+
+6. Paste the [Fail to Perform query](/queries/dune/fail-to-perform.sql) into a [new Dune query](https://dune.com/queries).
+
+7. Paste the [User Cost query](/queries/dune/user-cost.sql) into a [new Dune query](https://dune.com/queries).
+
+8. Set all required parameters to all queries.
+
+   8.1 `Name of Dune project` is the name you set when submitting the contract for decoding.
+
+   8.2 `First block of test timeframe` must cut the first transaction of each systems because it's difficult to register them altogether and at an exact block number.
+
+   8.3 `Last block of test timeframe` marks the end of the benchmark timeframe.
+
+9. Run the queries.
+
 </details>
 
 <details>
   <summary>How to run RapidFire benchmark</summary>
-  ...
+
+1. Register your `RapidFire` deployment as Upkeep on [Chainlink Automation](https://automation.chain.link/) with 200K gas limit. It requires minumum of 5 LINK but more may be needed depending on the network, the congestion and the timeframe you want to run this benchmark.
+
+2. Register the same `RapidFire` deployment as Task on [Gelato Automation](https://app.gelato.network/).
+
+   2.1 Select `exec` as function to be automated.
+
+   2.2 Use the `RapidFire` contract address as resolver and select the `checker` function to be called.
+
+   2.3 Deposit enough native tokens to allow running for the timeframe of the benchmark.
+
+3. Stop the Chainlink Upkeep and Gelato Task once the decided benchmark timeframe has ended.
+
+4. Submit your `RapidFire` contract for decoding at [Dune Analytics](https://dune.com/contracts/new).
+
+5. Paste the [High Frequency query](/queries/dune/high-frequency.sql) into a [new Dune query](https://dune.com/queries).
+
+6. Set all required parameters.
+
+   6.1 `Name of Dune project` is the name you set when submitting the contract for decoding.
+
+   6.2 `First block of test timeframe` must cut the first transactions which were submitted before all systems were registered and running.
+
+   6.3 `Last block of test timeframe` marks the end of the benchmark timeframe.
+
+7. Run the query.
+
 </details>
 
 ## References
