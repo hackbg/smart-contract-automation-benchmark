@@ -114,7 +114,7 @@ npx hardhat run scripts/deploy.ts --network <network>
 
 4. Submit your `Target` contract for decoding at [Dune Analytics](https://dune.com/contracts/new).
 
-5. Paste the [Latency query](/queries/dune/latency.sql)) into a [new Dune query](https://dune.com/queries).
+5. Paste the [Latency query](/queries/dune/latency.sql) into a [new Dune query](https://dune.com/queries).
 
 6. Paste the [Fail to Perform query](/queries/dune/fail-to-perform.sql) into a [new Dune query](https://dune.com/queries).
 
