@@ -16,6 +16,7 @@ The results are reported in a dashboard that objectively shows how the solutions
   - Latency
   - Fail to Perform
   - User Cost
+  - Decentralized nodes
 - **[RapidFire.sol](/contracts/RapidFire.sol)** - This contract is nearly identical to the Highlander contract. The only difference is that the trigger condition is always true. It tests how frequently each system can service one contract. There primary metric for this test:
   - High Frequency
 
@@ -28,6 +29,8 @@ The results are reported in a dashboard that objectively shows how the solutions
   - Units: blocks
 - **[Fail to Perform](/queries/dune/fail-to-perform.sql)** - Measure percent of missed opportunities to perform within a reasonable or typical timeframe. This metric is captured during periods of medium and high network congestion.
   - Units: % missed
+- **[Decentralized Nodes](/queries/dune/decentralized-nodes.sql)** - Distinct count of nodes that service an upkeep.
+  - Units: distinct count of nodes (tx.origin)
 - **[User Cost](/queries/dune/user-cost.sql)** - Average price users pay per unit of gas. This is not the price of gas used by the transaction. This is the total transactional cost to the user such as value of tokens debited from their fund.
   - Units: USD per gas unit (or USD per 10k gas)
 - **[High Frequency](/queries/dune/high-frequency.sql)** - Measure maximum transaction throughput.
@@ -120,15 +123,17 @@ npx hardhat run scripts/deploy.ts --network <network>
 
 7. Paste the [User Cost query](/queries/dune/user-cost.sql) into a [new Dune query](https://dune.com/queries).
 
-8. Set all required parameters to all queries.
+8. Paste the [Decentralized Nodes query](/queries/dune/decentralized-nodes.sql) into a [new Dune query](https://dune.com/queries).
 
-   8.1 `Name of Dune project` is the name you set when submitting the contract for decoding.
+9. Set all required parameters to all queries.
 
-   8.2 `First block of test timeframe` must cut the first transaction of each systems because it's difficult to register them altogether and at an exact block number.
+   9.1 `Name of Dune project` is the name you set when submitting the contract for decoding.
 
-   8.3 `Last block of test timeframe` marks the end of the benchmark timeframe.
+   9.2 `First block of test timeframe` must cut the first transaction of each systems because it's difficult to register them altogether and at an exact block number.
 
-9. Run the queries.
+   9.3 `Last block of test timeframe` marks the end of the benchmark timeframe.
+
+10. Run the queries.
 
 </details>
 
